@@ -16,6 +16,19 @@
             mode=0644
   notify: "Restart zabbix-agent"
 
+- name: Create /etc/zabbix/zabbix_agentd.conf.d/zabbix_agentd.psk (1/2)
+  shell: openssl rand -hex 32 > /etc/zabbix/zabbix_agentd.conf.d/zabbix_agentd.psk
+  args:
+    creates: /etc/zabbix/zabbix_agentd.conf.d/zabbix_agentd.psk
+  notify: Restart zabbix-agent
+
+- name: Create /etc/zabbix/zabbix_agentd.conf.d/zabbix_agentd.psk (2/2)
+  file:
+    path: /etc/zabbix/zabbix_agentd.conf.d/zabbix_agentd.psk
+    owner: root
+    group: zabbix
+    mode: 0640
+
 - name: Copy local-userparameter_*
   copy:
     src: "{{ item }}"
