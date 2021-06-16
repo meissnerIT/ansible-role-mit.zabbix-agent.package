@@ -1,0 +1,23 @@
+---
+
+#19963: Setup used for Synology with armv7
+#
+# Please install zabbix-angentd with entware-ng
+# https://github.com/Entware/Entware-ng/wiki/Install-on-Synology-NAS
+# opkg install zabbix-agentd
+
+# https://github.com/SynoCommunity/spksrc/issues/2216
+# 
+# Please create a user "zabbix" via GUI
+#
+- name: "Ensure zabbix user"
+  command: egrep "^zabbix:" /etc/passwd
+  changed_when: no
+#  user: name=zabbix
+
+- name: "Configure zabbix-agent"
+  template: src={{ zabbix_agent_conf }}
+            dest=/opt/etc/zabbix_agentd.conf.d/local-mit-zabbix_agent.conf
+            mode=0644
+  notify: "Restart zabbix-agent (entware)"
+

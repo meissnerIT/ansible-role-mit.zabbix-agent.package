@@ -1,0 +1,31 @@
+---
+
+- name: "Ensure zabbix-agent is installed"
+  apt: pkg=zabbix-agent
+       state=present
+       update_cache=yes
+       cache_valid_time=3600
+
+#17539: Zur Aktualisierung verfügbare Pakete mit Zabbix prüfen
+#- name: "Installing dependencies"
+#  apt: name=update-notifier-common state=present
+
+- name: "Configure zabbix-agent ({{ zabbix_agent_conf }})"
+  template: src={{ zabbix_agent_conf }}
+            dest=/etc/zabbix/zabbix_agentd.conf.d/
+            mode=0644
+  notify: "Restart zabbix-agent"
+
+- name: Copy local-userparameter_*
+  copy:
+    src: "{{ item }}"
+    dest: /etc/zabbix/zabbix_agentd.conf.d/
+  with_items:
+    - local-userparameter_system-sw-packages-version.conf
+    - local-userparameter_systemd-timesyncd-timedatectl.conf
+  notify: "Restart zabbix-agent"
+
+# Ensure to use name.service and not only name
+- name: Start the zabbix-agent service
+  service: name=zabbix-agent.service state=started enabled=yes
+

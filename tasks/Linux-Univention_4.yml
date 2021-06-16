@@ -1,0 +1,43 @@
+---
+
+# We use instead of 3.0.7+dfsg-3 (Debian 9) as we want to use logrt.count (#19739)
+# 4.0.4+dfsg-1 is not for Debian 9, don't use it!
+- set_fact:
+    zabbix_agent_version: "4.0.3+dfsg-2~bpo9+1_{{ system_architecture|default('amd64') }}"
+
+# Using apt with a deb downloads the deb everytime we call ansible
+#- apt: deb=https://download.elastic.co/logstash/logstash/packages/debian/logstash_2.1.1-1_all.deb
+
+- name: "Downloading deb"
+    # Providing the name of the destination file will skip the download if the file exists
+  get_url: url=http://ftp.de.debian.org/debian/pool/main/z/zabbix/zabbix-agent_{{ zabbix_agent_version }}.deb dest=/var/cache/apt/archives/zabbix-agent_{{ zabbix_agent_version }}.deb
+
+- name: "Installing deb"
+  apt: deb=/var/cache/apt/archives/zabbix-agent_{{ zabbix_agent_version }}.deb
+
+# zabbix should be able to read /var/log/univention/listener.log
+- name: "Add user zabbix to group adm"
+  user:
+    name: zabbix
+    append: yes
+    groups: adm
+  notify: "Restart zabbix-agent"
+  
+- name: "Configure zabbix-agent ({{ zabbix_agent_conf }})"
+  template:
+    src: "{{ zabbix_agent_conf }}"
+    dest: /etc/zabbix/zabbix_agentd.conf.d/{{ zabbix_agent_conf }}
+    mode: 0644
+  notify: "Restart zabbix-agent"
+
+- name: Copy {{ item }}
+  copy:
+    src: "{{ item }}"
+    dest: /etc/zabbix/zabbix_agentd.conf.d/
+  with_items:
+    - local-userparameter_systemd-timesyncd-timedatectl.conf
+  notify: "Restart zabbix-agent"
+
+- name: Start the zabbix-agent service
+  service: name=zabbix-agent state=started enabled=yes
+
