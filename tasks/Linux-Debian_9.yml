@@ -1,10 +1,12 @@
 ---
 
-- name: "Ensure zabbix-agent is installed"
-  apt: pkg=zabbix-agent
-       state=present
-       update_cache=yes
-       cache_valid_time=3600
+- name: Install zabbix-agent (package from OS / Debian)
+  include_tasks: zabbix-agent-from-os.yml
+  when: zabbix_agent_version is not defined
+
+- name: Install zabbix-agent (package from zabbix.org)
+  include_tasks: zabbix-agent-from-zabbix.org.yml
+  when: zabbix_agent_version is defined
 
 #17539: Zur Aktualisierung verfügbare Pakete mit Zabbix prüfen
 #- name: "Installing dependencies"
