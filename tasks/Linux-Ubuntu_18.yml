@@ -1,5 +1,8 @@
 ---
 
+- set_fact:
+    zabbix_agent_conf_dir: /etc/zabbix/zabbix_agentd.conf.d/
+
 - name: "Ensure zabbix-agent is installed"
   apt: pkg=zabbix-agent
        state=present

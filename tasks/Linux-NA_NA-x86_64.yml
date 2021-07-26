@@ -6,6 +6,8 @@
     zabbix_agent_version: "4.0.30"
 - set_fact:
     zabbix_agent_tgz: "zabbix_agent-{{ zabbix_agent_version }}-linux-3.0-{{ system_architecture|default('amd64') }}-static.tar.gz"
+- set_fact:
+    zabbix_agent_conf_dir: /volume1/zabbix/conf/zabbix_agentd/
 
 # This doesn't work on every machine, simply use:
 # curl https://cdn.zabbix.com/zabbix/binaries/stable/4.0/4.0.30/zabbix_agent-4.0.30-linux-3.0-amd64-static.tar.gz

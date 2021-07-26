@@ -4,6 +4,8 @@
 # 4.0.4+dfsg-1 is not for Debian 9, don't use it!
 - set_fact:
     zabbix_agent_version: "4.0.3+dfsg-2~bpo9+1_{{ system_architecture|default('amd64') }}"
+- set_fact:
+    zabbix_agent_conf_dir: /etc/zabbix/zabbix_agentd.conf.d/
 
 # Using apt with a deb downloads the deb everytime we call ansible
 #- apt: deb=https://download.elastic.co/logstash/logstash/packages/debian/logstash_2.1.1-1_all.deb

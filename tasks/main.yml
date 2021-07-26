@@ -16,3 +16,20 @@
 - include_tasks: "{{ ansible_system }}-{{ ansible_distribution }}_{{ ansible_distribution_major_version }}-{{ ansible_machine }}.yml"
   when: ansible_lsb is not defined or ansible_lsb.id is not defined
 
+# Every OS specific playbook must set_fact zabbix_agent_conf_dir
+- name: Copy local-userparameter_*
+  copy:
+    src: "{{ item }}"
+    dest: "{{ zabbix_agent_conf_dir }}"
+  with_items:
+    - local-userparameter_local-web-page-get.conf
+    - local-userparameter_system-sw-packages-version.conf
+    - local-userparameter_systemd.conf
+  notify: Restart zabbix-agent
+
+- name: Remove deprecated local-userparameter_*
+  ansible.builtin.file:
+    path: "{{ zabbix_agent_conf_dir }}local-userparameter_systemd-timesyncd-timedatectl.conf"
+    state: absent
+  notify: Restart zabbix-agent
+

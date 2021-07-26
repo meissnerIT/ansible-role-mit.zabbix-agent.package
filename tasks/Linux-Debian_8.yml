@@ -1,5 +1,8 @@
 ---
 
+- set_fact:
+    zabbix_agent_conf_dir: /etc/zabbix/zabbix_agentd.conf.d/
+
 - name: "Remove deprecated zabbix repo"
   apt_repository: repo={{ item }} state=absent
   with_items:
@@ -27,16 +30,6 @@
        state=present
        update_cache=yes
        cache_valid_time=3600
-
-- name: Copy local-userparameter_system-sw-packages-version.conf
-  copy: src=local-userparameter_system-sw-packages-version.conf
-        dest=/etc/zabbix/zabbix_agentd.conf.d/
-  notify: "Restart zabbix-agent"
-
-- name: Copy local-userparameter_systemd-timesyncd-timedatectl.conf
-  copy: src=local-userparameter_systemd-timesyncd-timedatectl.conf
-        dest=/etc/zabbix/zabbix_agentd.conf.d/
-  notify: "Restart zabbix-agent"
 
 - name: "Configure zabbix-agent ({{ zabbix_agent_conf }})"
   template: src={{ zabbix_agent_conf }}

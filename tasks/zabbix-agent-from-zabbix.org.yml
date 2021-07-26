@@ -2,6 +2,7 @@
 
 - set_fact:
     zabbix_agent_package: "zabbix-agent_{{ zabbix_agent_version }}-1+{{ ansible_distribution_release }}_amd64.deb"
+    zabbix_sender_package: "zabbix-sender_{{ zabbix_agent_version }}-1+{{ ansible_distribution_release }}_amd64.deb"
 
 - name: Download zabbix-agent v{{ zabbix_agent_version }} from zabbix.org
   # Providing the name of the destination file will skip the download if the file exists
@@ -9,9 +10,19 @@
     url: https://repo.zabbix.com/zabbix/5.0/debian/pool/main/z/zabbix/{{ zabbix_agent_package }}
     dest: /var/cache/apt/archives/{{ zabbix_agent_package }}
 
+- name: Download zabbix-sender v{{ zabbix_agent_version }} from zabbix.org
+  # Providing the name of the destination file will skip the download if the file exists
+  get_url:
+    url: https://repo.zabbix.com/zabbix/5.0/debian/pool/main/z/zabbix/{{ zabbix_sender_package }}
+    dest: /var/cache/apt/archives/{{ zabbix_sender_package }}
+
 - name: Installing zabbix-agent v{{ zabbix_agent_version }}
   apt:
     deb: /var/cache/apt/archives/{{ zabbix_agent_package }}
+
+- name: Installing zabbix-sender v{{ zabbix_agent_version }}
+  apt:
+    deb: /var/cache/apt/archives/{{ zabbix_sender_package }}
 
 # Debian default
 - name: Set include to zabbix_agentd.conf.d
