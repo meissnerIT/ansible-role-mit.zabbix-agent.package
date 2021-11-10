@@ -28,7 +28,7 @@
     creates: "{{ zabbix_agent_conf_dir }}zabbix_agentd.psk"
   notify: Restart zabbix-agent
 
-- name: Create /etc/zabbix/zabbix_agentd.conf.d/zabbix_agentd.psk (2/2)
+- name: Create {{ zabbix_agent_conf_dir }}zabbix_agentd.psk (2/2)
   file:
     path: "{{ zabbix_agent_conf_dir }}zabbix_agentd.psk"
     owner: root
