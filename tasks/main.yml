@@ -29,7 +29,7 @@
 
 - name: Remove deprecated local-userparameter_*
   ansible.builtin.file:
-    path: "{{ zabbix_agent_conf_dir }}local-userparameter_systemd-timesyncd-timedatectl.conf"
+    path: "{{ zabbix_agent_conf_dir }}/local-userparameter_systemd-timesyncd-timedatectl.conf"
     state: absent
   notify: Restart zabbix-agent
 
