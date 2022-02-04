@@ -34,3 +34,11 @@
     state: absent
   notify: Restart zabbix-agent
 
+# https://wiki.debian.org/SystemGroups
+- name: Add user zabbix to group adm
+  user:
+    name: zabbix
+    groups: adm
+    append: yes
+  notify: Restart zabbix-agent
+
