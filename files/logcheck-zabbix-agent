@@ -1,0 +1,2 @@
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ zabbix_agentd\[[0-9]+\]: Starting Zabbix Agent \[.*\]\. Zabbix [0-9\.]+ \(revision [a-z0-9]+\)\.
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ zabbix_agentd\[[0-9]+\]: Press Ctrl\+C to exit\.

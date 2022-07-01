@@ -36,6 +36,16 @@
     group: zabbix
     mode: 0640
 
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Copy logcheck rules
+  copy:
+    src: logcheck-zabbix-agent
+    dest: /etc/logcheck/ignore.d.server/mit-defaults-zabbix-agent
+  when: "'logcheck' in ansible_facts.packages"
+
 # Ensure to use name.service and not only name
 - name: Start the zabbix-agent service
   service:
