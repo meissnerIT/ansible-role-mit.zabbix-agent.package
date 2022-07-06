@@ -16,8 +16,9 @@
 #  user: name=zabbix
 
 - name: "Configure zabbix-agent"
-  template: src={{ zabbix_agent_conf }}
-            dest=/opt/etc/zabbix_agentd.conf.d/local-mit-zabbix_agent.conf
-            mode=0644
+  template:
+    src: "{{ zabbix_agent_conf }}"
+    dest: /opt/etc/zabbix_agentd.conf.d/local-mit-zabbix_agent.conf
+    mode: 0644
   notify: "Restart zabbix-agent (entware)"
 

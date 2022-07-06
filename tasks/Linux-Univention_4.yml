@@ -26,11 +26,19 @@
     groups: adm
   notify: "Restart zabbix-agent"
   
-- name: "Configure zabbix-agent ({{ zabbix_agent_conf }})"
+- name: Configure zabbix-agent ({{ zabbix_agent_conf }})
   template:
     src: "{{ zabbix_agent_conf }}"
-    dest: /etc/zabbix/zabbix_agentd.conf.d/{{ zabbix_agent_conf }}
+    # We use the same name for all which makes it easier if we change the
+    # template for some hosts (myconf1.conf -> myconf2.conf)
+    dest: "{{ zabbix_agent_conf_dir }}/local-zabbix_agentd.conf"
     mode: 0644
+  notify: "Restart zabbix-agent"
+
+- name: Remove deprecated {{ zabbix_agent_conf_dir }}/{{ zabbix_agent_conf }}
+  file:
+    path: "{{ zabbix_agent_conf_dir }}/{{ zabbix_agent_conf }}"
+    state: absent
   notify: "Restart zabbix-agent"
 
 - name: Copy {{ item }}
