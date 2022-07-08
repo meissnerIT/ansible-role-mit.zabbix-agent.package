@@ -16,7 +16,7 @@
 #- name: "Installing dependencies"
 #  apt: name=update-notifier-common state=present
 
-- name: Configure zabbix-agent ({{ zabbix_agent_conf }})
+- name: Configure zabbix-agent ({{ zabbix_agent_conf }} -> local-zabbix_agentd.conf)
   template:
     src: "{{ zabbix_agent_conf }}"
     # We use the same name for all which makes it easier if we change the
