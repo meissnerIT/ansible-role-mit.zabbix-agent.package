@@ -29,6 +29,17 @@
     - local-userparameter_systemd.conf
   notify: Restart zabbix-agent
 
+# e.g. files/etc/zabbix_agentd.conf.d/local-my.host.conf
+- name: Copy local-{{ ansible_fqdn }}.conf
+  copy:
+    src: "{{ item }}"
+    dest: "{{ zabbix_agent_conf_dir }}/local.conf"
+  with_first_found:
+    - files:
+      - "etc/zabbix_agentd.conf.d/local-{{ ansible_fqdn }}.conf"
+      skip: yes
+  notify: Restart zabbix-agent
+
 - name: Remove deprecated local-userparameter_*
   ansible.builtin.file:
     path: "{{ zabbix_agent_conf_dir }}/local-userparameter_systemd-timesyncd-timedatectl.conf"
