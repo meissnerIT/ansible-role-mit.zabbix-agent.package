@@ -61,3 +61,10 @@
     group: zabbix
     mode: 0640
 
+# Ensure to use name.service and not only name
+- name: Start the zabbix-agent service
+  service:
+    name: zabbix-agent.service
+    state: started
+    enabled: yes
+
