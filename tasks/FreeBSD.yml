@@ -49,6 +49,13 @@
 #    dest: /etc/logcheck/ignore.d.server/mit-defaults-zabbix-agent
 #  when: "'logcheck' in ansible_facts.packages"
 
+# logrotate
+# /usr/local/etc/newsyslog.conf.d should have been created by role mit.basic
+- name: Copy /usr/local/etc/newsyslog.conf.d/zabbix_agentd.conf
+  copy:
+    src: newsyslog-zabbix_agentd.conf
+    dest: /usr/local/etc/newsyslog.conf.d/zabbix_agentd.conf
+
 # Ensure to use name.service and not only name
 - name: Start the zabbix-agent service
   service:
