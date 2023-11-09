@@ -10,7 +10,7 @@
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
-      - "{{ ansible_system }}-{{ ansible_lsb.id }}_{{ ansible_lsb.major_release }}.yml"
+      - "{{ ansible_system }}-{{ ansible_lsb.id|default('') }}_{{ ansible_lsb.major_release|default('') }}.yml"
 
 - name: Include ansible_system-ansible_distribution_ansible_distribution_major_version-ansible_machine.yml
   ansible.builtin.include_tasks: "{{ tasks_file }}"
