@@ -37,8 +37,6 @@
     - local-userparameter_local-vfs-dir-count.conf
     - local-userparameter_local-vfs-file-owner.conf
     - local-userparameter_local-web-page-get.conf
-    - local-userparameter_system-sw-packages-version.conf
-    - local-userparameter_systemd.conf
   notify: Restart zabbix-agent
 
 # e.g. files/etc/zabbix_agentd.conf.d/local-my.host.conf
