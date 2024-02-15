@@ -18,6 +18,7 @@
   copy:
     src: zabbix-docker-state
     dest: /usr/local/bin/
+    mode: 0755
 
 # https://wiki.debian.org/SystemGroups
 - name: Add user zabbix to group adm
