@@ -10,7 +10,7 @@
 # * DESCRIPTION
 # * MATCHING: One of full, left or right (https://www.redhat.com/de/topics/devops/what-is-blue-green-deployment)
 #
-# v2024-03-05 by markus.meissner@meissner.IT
+# v2024-03-06 by markus.meissner@meissner.IT
 
 import csv
 import json
@@ -26,10 +26,11 @@ if os.path.exists(conffile):
     with open(conffile) as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
-            data.append({
-                    "{#NAMES}": row[0],
-                    "{#DESCRIPTION}": row[1] if len(row)>1 else row[0],
-                    "{#MATCHING}": row[2] if len(row)>2 else "full" })
+            if not row[0].startswith('#'):
+                data.append({
+                        "{#NAMES}": row[0],
+                        "{#DESCRIPTION}": row[1] if len(row)>1 else row[0],
+                        "{#MATCHING}": row[2] if len(row)>2 else "full" })
 
 # Output all
 print(json.dumps({"data": data}, indent=4))
