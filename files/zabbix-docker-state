@@ -40,12 +40,20 @@ ret_state = 98
 # 2024-01-17: Docker sorts the output with the newest container first.
 # -> We take the first / newest container if we have multiple (blue, green).
 docker_ps = subprocess.run(['docker', 'ps', '--format', '{{.Names}} {{.State}}'], capture_output=True, text=True)
-for line in docker_ps.stdout.splitlines():
-    name, state = line.split()
-    #print("name={}, state={}".format(name, state))
-    if matches(name):
-        ret_state = get_state(state)
-        break
+
+if docker_ps.returncode != 0:
+    if "permission denied" in docker_ps.stderr:
+        # we probably need `sudo adduser zabbix docker`
+        ret_state = 96
+    else:
+        ret_state = 95
+else:
+    for line in docker_ps.stdout.splitlines():
+        name, state = line.split()
+        #print("name={}, state={}".format(name, state))
+        if matches(name):
+            ret_state = get_state(state)
+            break
 
 print(ret_state)
 

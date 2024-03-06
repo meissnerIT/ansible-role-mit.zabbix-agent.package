@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+#
+# Distributed via ansible - mit.zabbix-agent.package
+#
+# Reports all configured docker container.
+#
+# /etc/zabbix/mit-zabbix-lld-docker-container.conf:
+# 
+# * NAMES: Name of the docker container
+# * DESCRIPTION
+# * MATCHING: One of full, left or right (https://www.redhat.com/de/topics/devops/what-is-blue-green-deployment)
+#
+# v2024-03-05 by markus.meissner@meissner.IT
+
+import csv
+import json
+import glob
+import os
+
+data = list()
+
+
+# Custom
+conffile = '/etc/zabbix/mit-zabbix-lld-docker-container.conf'
+if os.path.exists(conffile):
+    with open(conffile) as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            data.append({
+                    "{#NAMES}": row[0],
+                    "{#DESCRIPTION}": row[1] if len(row)>1 else row[0],
+                    "{#MATCHING}": row[2] if len(row)>2 else "full" })
+
+# Output all
+print(json.dumps({"data": data}, indent=4))
+
