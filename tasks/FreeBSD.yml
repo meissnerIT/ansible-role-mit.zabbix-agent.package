@@ -44,6 +44,7 @@
     src: "FreeBSD/{{ item }}"
     dest: "{{ zabbix_agent_conf_dir }}"
   with_items:
+    - local-userparameter_service.conf
     - local-userparameter_system-sw-packages-version.conf
   notify: Restart zabbix-agent
 
