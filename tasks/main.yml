@@ -20,8 +20,10 @@
     files:
       - "{{ ansible_system }}-{{ ansible_distribution }}_{{ ansible_distribution_major_version }}-{{ ansible_machine }}.yml"
 
+# 2024-05-13: Oracle Linux Server release 8.9 does not support any ansible_* variable
 - name: Include ansible_system-ansible_distribution.yml / ansible_system.yml
   ansible.builtin.include_tasks: "{{ tasks_file }}"
+  when: tasks_file != ""
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
