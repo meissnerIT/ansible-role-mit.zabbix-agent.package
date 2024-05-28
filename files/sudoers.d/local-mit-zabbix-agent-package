@@ -1,0 +1,3 @@
+# Distributed via ansible - mit.zabbix-agent.package
+zabbix	ALL = (ALL) NOPASSWD: /usr/bin/systemctl is-active *
+
