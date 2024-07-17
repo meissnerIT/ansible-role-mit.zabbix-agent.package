@@ -14,7 +14,7 @@
 
 - name: Include ansible_system-ansible_distribution_ansible_distribution_major_version-ansible_machine.yml
   ansible.builtin.include_tasks: "{{ tasks_file }}"
-  when: (ansible_lsb is not defined or ansible_lsb.id is not defined) and tasks_file != ""
+  when: (ansible_lsb is not defined or ansible_lsb.id is not defined) and ansible_distribution_major_version is defined and tasks_file != ""
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
