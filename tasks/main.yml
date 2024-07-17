@@ -30,6 +30,17 @@
       - "{{ ansible_system }}-{{ ansible_distribution }}.yml"  # Linux-Debian.yml
       - "{{ ansible_system }}.yml"  # FreeBSD.yml
 
+
+- name: Copy low level discovery (lld) scripts
+  template:
+    src: "{{ item }}"
+    # Same for Linux and FreeBSD
+    dest: "/usr/local/bin/"
+    mode: 0755
+  loop:
+    - zabbix-lld-services
+    - zabbix-lld-tcp-services
+
 # Every OS specific playbook must set_fact zabbix_agent_conf_dir
 - name: Copy local-userparameter_*
   copy:
@@ -37,6 +48,7 @@
     dest: "{{ zabbix_agent_conf_dir }}"
   with_items:
     - local-userparameter_ntp_client.conf
+    - local-userparameter_tcp_services.conf
     - local-userparameter_local-vfs-dir-count.conf
     - local-userparameter_local-vfs-file-owner.conf
     - local-userparameter_local-web-page-get.conf

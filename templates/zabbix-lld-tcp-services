@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+#
+# Distributed via ansible - mit.zabbix-agent.package
+#
+# Reports all configured services.
+#
+# /etc/zabbix/mit-zabbix-lld-tcp-services.conf:
+#
+# - port
+# - name
+# 
+# v2024-07-16 by markus.meissner@meissner.IT
+
+import csv
+import json
+import glob
+import os
+
+data = list()
+
+
+# Custom
+conffile = '{{ etc_prefix }}/etc/zabbix/mit-zabbix-lld-tcp-services.conf'
+if os.path.exists(conffile):
+    with open(conffile) as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            if len(row)>0 and not row[0].startswith('#'):
+                data.append({
+                        "{{ '{#PORT}' }}": row[0],
+                        "{{ '{#NAME}' }}": row[1]})
+
+# Output all
+print(json.dumps({"data": data}, indent=4))
+
