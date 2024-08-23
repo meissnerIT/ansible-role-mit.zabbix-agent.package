@@ -4,10 +4,11 @@
 #
 # Reports all configured services.
 #
-# /etc/zabbix/mit-zabbix-lld-tcp-services.conf:
+# /etc/zabbix/mit-zabbix-lld-services.conf:
 #
-# - service
-# - display name
+# - SERVICE
+# - DISPLAY_NAME (set to 'BY_SERVICE_DESCRIPTION' for getting the name via service / systemctl)
+# - TAG
 # 
 # v2024-07-16 by markus.meissner@meissner.IT
 
@@ -15,6 +16,7 @@ import csv
 import json
 import glob
 import os
+import zabbix_lld
 
 data = list()
 
@@ -28,7 +30,8 @@ if os.path.exists(conffile):
             if len(row)>0 and not row[0].startswith('#'):
                 data.append({
                         "{{ '{#SERVICE}' }}": row[0],
-                        "{{ '{#DISPLAY_NAME}' }}": row[1] if len(row)>1 else row[0]})
+                        "{{ '{#DISPLAY_NAME}' }}": zabbix_lld.get_service_name(row[1] if len(row)>1 else row[0]),
+                        "{{ '{#TAG}' }}": row[2] if len(row)>2 else "" })
 
 # Output all
 print(json.dumps({"data": data}, indent=4))

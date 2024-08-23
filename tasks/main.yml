@@ -31,6 +31,15 @@
       - "{{ ansible_system }}.yml"  # FreeBSD.yml
 
 
+- name: Copy low level discovery (lld) helper scripts
+  template:
+    src: "{{ item }}"
+    # Same for Linux and FreeBSD
+    dest: "/usr/local/bin/"
+    mode: 0644
+  loop:
+    - zabbix_lld.py
+
 - name: Copy low level discovery (lld) scripts
   template:
     src: "{{ item }}"
