@@ -9,7 +9,11 @@ def get_service_name(name):
         process = subprocess.run(
             "systemctl cat "+service+"|grep Description",
             capture_output=True, shell=True, encoding='utf8')
-        description = process.stdout.split('=')[1].rstrip()
+        description_from_systemctl = process.stdout.split('=')
+        if len(description_from_systemctl)==2:
+            description = description_from_systemctl[1].rstrip()
+        else:
+            description = "no description found"
         return description + " ("+service+")"
     else:
         return name
