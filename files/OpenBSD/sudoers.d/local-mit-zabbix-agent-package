@@ -1,0 +1,2 @@
+# Distributed via ansible - mit.zabbix-agent.package
+_zabbix ALL = (ALL) NOPASSWD: /usr/sbin/rcctl check

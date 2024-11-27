@@ -1,7 +1,6 @@
 ---
-
 # Contains the path to the dir without final '/' (was mixed before 2021-11-12)
-- set_fact:
+- ansible.builtin.set_fact:
     zabbix_agent_conf_dir: /etc/zabbix/zabbix_agentd.conf.d
 
 - name: Gather the package facts
@@ -10,15 +9,15 @@
   when: ansible_facts.packages is not defined
 
 - name: Copy sudo rules for service status
-  copy:
+  ansible.builtin.copy:
     src: sudoers.d/local-mit-zabbix-agent-package
     dest: /etc/sudoers.d/
-    mode: 0440
-    validate: 'visudo -cf %s'
+    mode: "0440"
+    validate: visudo -cf %s
   when: "'dbus' not in ansible_facts.packages"
 
 - name: Copy local-userparameter_*
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ zabbix_agent_conf_dir }}"
   with_items:
@@ -27,25 +26,24 @@
   notify: Restart zabbix-agent
 
 - name: Copy local-userparameter_systemd.conf
-  template:
+  ansible.builtin.template:
     src: local-userparameter_systemd.conf
     dest: "{{ zabbix_agent_conf_dir }}"
   notify: Restart zabbix-agent
 
 - name: Copy binaries
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: /usr/local/bin/
-    mode: 0755
+    mode: "0755"
   loop:
     - zabbix-docker-state
     - zabbix-lld-docker-container
 
 # https://wiki.debian.org/SystemGroups
 - name: Add user zabbix to group adm
-  user:
+  ansible.builtin.user:
     name: zabbix
     groups: adm
-    append: yes
+    append: true
   notify: Restart zabbix-agent
-

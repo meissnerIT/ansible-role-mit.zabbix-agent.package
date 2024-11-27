@@ -1,5 +1,4 @@
 ---
-
 # We use ansible_lsb.id instead of ansible_distribution as this adds support for 
 # UCS (Univention Corporate Server) which reports ansible_distribution=Debian and
 # ansible_lsb.id=Univention
@@ -10,7 +9,7 @@
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
-      - "{{ ansible_system }}-{{ ansible_lsb.id|default('') }}_{{ ansible_lsb.major_release|default('') }}.yml" # Linux-Debian_12.yml
+      - "{{ ansible_system }}-{{ ansible_lsb.id | default('') }}_{{ ansible_lsb.major_release | default('') }}.yml" # Linux-Debian_12.yml
 
 - name: Include ansible_system-ansible_distribution_ansible_distribution_major_version-ansible_machine.yml
   ansible.builtin.include_tasks: "{{ tasks_file }}"
@@ -18,7 +17,7 @@
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
-      - "{{ ansible_system }}-{{ ansible_distribution }}_{{ ansible_distribution_major_version }}-{{ ansible_machine }}.yml"
+      - "{{ ansible_system }}-{{ ansible_distribution }}_{{ ansible_distribution_major_version }}-{{ ansible_machine }}.yml"
 
 # 2024-05-13: Oracle Linux Server release 8.9 does not support any ansible_* variable
 - name: Include ansible_system-ansible_distribution.yml / ansible_system.yml
@@ -27,32 +26,31 @@
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
-      - "{{ ansible_system }}-{{ ansible_distribution }}.yml"  # Linux-Debian.yml
-      - "{{ ansible_system }}.yml"  # FreeBSD.yml
-
+      - "{{ ansible_system }}-{{ ansible_distribution }}.yml" # Linux-Debian.yml
+      - "{{ ansible_system }}.yml" # FreeBSD.yml
 
 - name: Copy low level discovery (lld) helper scripts
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     # Same for Linux and FreeBSD
-    dest: "/usr/local/bin/"
-    mode: 0644
+    dest: /usr/local/bin/
+    mode: "0644"
   loop:
     - zabbix_lld.py
 
 - name: Copy low level discovery (lld) scripts
-  template:
+  ansible.builtin.template:
     src: "{{ item }}"
     # Same for Linux and FreeBSD
-    dest: "/usr/local/bin/"
-    mode: 0755
+    dest: /usr/local/bin/
+    mode: "0755"
   loop:
     - zabbix-lld-services
     - zabbix-lld-tcp-services
 
 # Every OS specific playbook must set_fact zabbix_agent_conf_dir
 - name: Copy local-userparameter_*
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ zabbix_agent_conf_dir }}"
   with_items:
@@ -65,13 +63,13 @@
 
 # e.g. files/etc/zabbix_agentd.conf.d/local-my.host.conf
 - name: Copy local-{{ inventory_hostname }}.conf
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ zabbix_agent_conf_dir }}/local.conf"
   with_first_found:
     - files:
-      - "etc/zabbix_agentd.conf.d/local-{{ inventory_hostname }}.conf"
-      skip: yes
+        - etc/zabbix_agentd.conf.d/local-{{ inventory_hostname }}.conf
+      skip: true
   notify: Restart zabbix-agent
 
 - name: Remove deprecated local-userparameter_*
@@ -79,4 +77,3 @@
     path: "{{ zabbix_agent_conf_dir }}/local-userparameter_systemd-timesyncd-timedatectl.conf"
     state: absent
   notify: Restart zabbix-agent
-

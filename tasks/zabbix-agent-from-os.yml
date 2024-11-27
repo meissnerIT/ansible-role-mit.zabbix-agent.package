@@ -1,8 +1,6 @@
 ---
-
 - name: Install zabbix-agent (package from OS / Debian)
-  apt:
+  ansible.builtin.apt:
     pkg: zabbix-agent
     state: present
     cache_valid_time: 3600
-
