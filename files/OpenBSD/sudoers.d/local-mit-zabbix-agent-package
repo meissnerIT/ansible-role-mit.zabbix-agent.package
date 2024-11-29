@@ -1,2 +1,4 @@
 # Distributed via ansible - mit.zabbix-agent.package
-_zabbix ALL = (ALL) NOPASSWD: /usr/sbin/rcctl check
+_zabbix ALL = (ALL) NOPASSWD: /usr/bin/mailq
+# At least nsd needs root privileges
+_zabbix ALL = (ALL) NOPASSWD: /usr/sbin/rcctl check *
