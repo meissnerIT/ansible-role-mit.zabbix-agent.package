@@ -1,5 +1,5 @@
 ---
-# We use ansible_lsb.id instead of ansible_distribution as this adds support for 
+# We use ansible_lsb.id instead of ansible_distribution as this adds support for
 # UCS (Univention Corporate Server) which reports ansible_distribution=Debian and
 # ansible_lsb.id=Univention
 
@@ -53,6 +53,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ zabbix_agent_conf_dir }}"
+    mode: "644"
   with_items:
     - local-userparameter_ntp_client.conf
     - local-userparameter_tcp_services.conf
@@ -62,10 +63,11 @@
   notify: Restart zabbix-agent
 
 # e.g. files/etc/zabbix_agentd.conf.d/local-my.host.conf
-- name: Copy local-{{ inventory_hostname }}.conf
+- name: Copy local-{{ inventory_hostname }}.conf # noqa name
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ zabbix_agent_conf_dir }}/local.conf"
+    mode: "644"
   with_first_found:
     - files:
         - etc/zabbix_agentd.conf.d/local-{{ inventory_hostname }}.conf

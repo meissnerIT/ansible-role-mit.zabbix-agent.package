@@ -1,20 +1,27 @@
 ---
-- ansible.builtin.set_fact:
+- name: Set release
+  ansible.builtin.set_fact:
+    zabbix_distribution_release: "{{ 'ubuntu' + ansible_lsb.release if (ansible_distribution=='Ubuntu') else ansible_distribution_release }}"
+- name: Set zabbix_major_version and zabbix_sender_package
+  ansible.builtin.set_fact:
     zabbix_major_version: "{{ zabbix_agent_version | regex_replace('^([0-9]+\\.[0-9]+)(.*)$', '\\1') }}"
-    zabbix_agent_package: zabbix-agent_{{ zabbix_agent_version }}-1+{{ ansible_distribution_release }}_amd64.deb
-    zabbix_sender_package: zabbix-sender_{{ zabbix_agent_version }}-1+{{ ansible_distribution_release }}_amd64.deb
+    # bullseye on Debian, 24.04 on Ubuntu
+    zabbix_agent_package: zabbix-agent_{{ zabbix_agent_version }}-1+{{ zabbix_distribution_release }}_amd64.deb
+    zabbix_sender_package: zabbix-sender_{{ zabbix_agent_version }}-1+{{ zabbix_distribution_release }}_amd64.deb
 
-- name: Download zabbix-agent v{{ zabbix_agent_version }} from zabbix.org
+- name: Download zabbix-agent v{{ zabbix_agent_version }} from zabbix.org # noqa name
   # Providing the name of the destination file will skip the download if the file exists
   ansible.builtin.get_url:
-    url: https://repo.zabbix.com/zabbix/{{ zabbix_major_version }}/debian/pool/main/z/zabbix/{{ zabbix_agent_package }}
+    url: https://repo.zabbix.com/zabbix/{{ zabbix_major_version }}/{{ ansible_distribution | lower }}/pool/main/z/zabbix/{{ zabbix_agent_package }}
     dest: /var/cache/apt/archives/{{ zabbix_agent_package }}
+    mode: "644"
 
-- name: Download zabbix-sender v{{ zabbix_agent_version }} from zabbix.org
+- name: Download zabbix-sender v{{ zabbix_agent_version }} from zabbix.org # noqa name
   # Providing the name of the destination file will skip the download if the file exists
   ansible.builtin.get_url:
-    url: https://repo.zabbix.com/zabbix/{{ zabbix_major_version }}/debian/pool/main/z/zabbix/{{ zabbix_sender_package }}
+    url: https://repo.zabbix.com/zabbix/{{ zabbix_major_version }}/{{ ansible_distribution | lower }}/pool/main/z/zabbix/{{ zabbix_sender_package }}
     dest: /var/cache/apt/archives/{{ zabbix_sender_package }}
+    mode: "644"
 
 - name: Installing zabbix-agent v{{ zabbix_agent_version }}
   ansible.builtin.apt:
@@ -24,22 +31,31 @@
   ansible.builtin.apt:
     deb: /var/cache/apt/archives/{{ zabbix_sender_package }}
 
-# Debian default
+# Move path to Debians default (/etc/zabbix/zabbix_agentd.d → /etc/zabbix/zabbix_agentd.conf.d/)
+- name: Create /etc/zabbix/zabbix_agentd.conf.d/
+  ansible.builtin.file:
+    path: /etc/zabbix/zabbix_agentd.conf.d/
+    state: directory
+    mode: "755"
+- name: Create /var/log/zabbix-agent/
+  ansible.builtin.file:
+    path: /var/log/zabbix-agent/
+    state: directory
+    mode: "755"
+    owner: zabbix
+    group: zabbix
 - name: Set include to zabbix_agentd.conf.d
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agentd.conf
     regexp: ^Include=
     line: Include=/etc/zabbix/zabbix_agentd.conf.d/*.conf
   notify: Restart zabbix-agent
-
-# Debian default
 - name: Set LogFile to /var/log/zabbix-agent/zabbix_agentd.log
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agentd.conf
     regexp: ^LogFile=
     line: LogFile=/var/log/zabbix-agent/zabbix_agentd.log
   notify: Restart zabbix-agent
-
 - name: Remove deprecated zabbix_agentd.d
   ansible.builtin.file:
     path: /etc/zabbix/zabbix_agentd.d
