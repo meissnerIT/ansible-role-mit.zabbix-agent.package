@@ -1,20 +1,20 @@
 ---
 # Contains the path to the dir without final '/' (was mixed before 2021-11-12)
 # Also see mit.zabbix-agent.common/vars/FreeBSD.yml
-- ansible.builtin.set_fact:
+- name: Set zabbix_agent_pkg_name
+  ansible.builtin.set_fact:
     zabbix_agent_pkg_name: "{{ zabbix_agent_pkg_name_prefix }}-agent"
-- ansible.builtin.set_fact:
-    zabbix_agent_conf_dir: /usr/local/etc/{{ zabbix_agent_pkg_name_prefix }}/zabbix_agentd.conf.d
 
 - name: Install zabbix-agent
   ansible.builtin.package:
     name: "{{ zabbix_agent_pkg_name }}"
 
-- name: Enable include of /usr/local/etc/{{ zabbix_agent_pkg_name_prefix }}/zabbix_agentd.conf.d/*.conf
+- name: Enable include of {{ zabbix_agent_conf_dir }}/*.conf # noqa: name[template]
   ansible.builtin.lineinfile:
     dest: /usr/local/etc/{{ zabbix_agent_pkg_name_prefix }}/zabbix_agentd.conf
-    regexp: Include=\/usr\/local\/etc\/{{ zabbix_agent_pkg_name_prefix }}\/zabbix_agentd\.conf\.d\/\*\.conf
-    line: Include=/usr/local/etc/{{ zabbix_agent_pkg_name_prefix }}/zabbix_agentd.conf.d/*.conf
+    insertafter: "# Include="
+    regexp: Include={{ zabbix_agent_conf_dir | regex_replace('/', '\\/') }}\/\*\.conf
+    line: Include={{ zabbix_agent_conf_dir }}/*.conf
 
 - name: Configure zabbix-agent ({{ zabbix_agent_conf }})
   ansible.builtin.template:
@@ -25,13 +25,13 @@
     mode: "0644"
   notify: Restart zabbix-agent
 
-- name: Create {{ zabbix_agent_conf_dir }}/zabbix_agentd.psk (1/2)
+- name: Create {{ zabbix_agent_conf_dir }}/zabbix_agentd.psk (1/2) # noqa: name[template]
   ansible.builtin.shell: openssl rand -hex 32 > {{ zabbix_agent_conf_dir }}/zabbix_agentd.psk
   args:
     creates: "{{ zabbix_agent_conf_dir }}/zabbix_agentd.psk"
   notify: Restart zabbix-agent
 
-- name: Create {{ zabbix_agent_conf_dir }}/zabbix_agentd.psk (2/2)
+- name: Create {{ zabbix_agent_conf_dir }}/zabbix_agentd.psk (2/2) # noqa: name[template]
   ansible.builtin.file:
     path: "{{ zabbix_agent_conf_dir }}/zabbix_agentd.psk"
     owner: root
@@ -42,16 +42,17 @@
   ansible.builtin.copy:
     src: FreeBSD/{{ item }}
     dest: "{{ zabbix_agent_conf_dir }}"
+    mode: "644"
   with_items:
     - local-userparameter_service.conf
     - local-userparameter_system-sw-packages-version.conf
   notify: Restart zabbix-agent
 
-#- name: Gather the package facts
+# - name: Gather the package facts
 #  ansible.builtin.package_facts:
 #    manager: auto
 #
-#- name: Copy logcheck rules
+# - name: Copy logcheck rules
 #  copy:
 #    src: logcheck-zabbix-agent
 #    dest: /etc/logcheck/ignore.d.server/mit-defaults-zabbix-agent
@@ -63,6 +64,7 @@
   ansible.builtin.copy:
     src: newsyslog-zabbix_agentd.conf
     dest: /usr/local/etc/newsyslog.conf.d/zabbix_agentd.conf
+    mode: "644"
 
 # Ensure to use name.service and not only name
 - name: Start the zabbix-agent service
