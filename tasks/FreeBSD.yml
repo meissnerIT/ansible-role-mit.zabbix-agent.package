@@ -5,7 +5,7 @@
   ansible.builtin.set_fact:
     zabbix_agent_pkg_name: "{{ zabbix_agent_pkg_name_prefix }}-agent"
 
-- name: Install zabbix-agent
+- name: Install zabbix-agent ({{ zabbix_agent_pkg_name }}) # noqa: name[template]
   ansible.builtin.package:
     name: "{{ zabbix_agent_pkg_name }}"
 
@@ -16,6 +16,7 @@
     regexp: Include={{ zabbix_agent_conf_dir | regex_replace('/', '\\/') }}\/\*\.conf
     line: Include={{ zabbix_agent_conf_dir }}/*.conf
 
+<<<<<<< HEAD
 - name: Create {{ zabbix_agent_conf_dir }} # noqa: name[template]
   ansible.builtin.file:
     dest: "{{ zabbix_agent_conf_dir }}/"
@@ -23,6 +24,15 @@
     mode: '755'
 
 - name: Configure zabbix-agent ({{ zabbix_agent_conf }}) # noqa: name[template]
+=======
+- name: Create {{ zabbix_agent_conf_dir }} # noqa[name-template]
+  ansible.builtin.file:
+    path: "{{ zabbix_agent_conf_dir }}"
+    state: directory
+    mode: "755"
+
+- name: Configure zabbix-agent ({{ zabbix_agent_conf }})
+>>>>>>> f63d7c9b20016c14594a370cda1dfcd8a7e40f1e
   ansible.builtin.template:
     src: "{{ zabbix_agent_conf }}"
     # We use the same name for all which makes it easier if we change the
