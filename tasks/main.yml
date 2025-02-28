@@ -33,7 +33,7 @@
   ansible.builtin.template:
     src: "{{ item }}"
     # Same for Linux and FreeBSD
-    dest: /usr/local/bin/
+    dest: /opt/bin/
     mode: "0644"
   loop:
     - zabbix_lld.py
@@ -42,7 +42,7 @@
   ansible.builtin.template:
     src: "{{ item }}"
     # Same for Linux and FreeBSD
-    dest: /usr/local/bin/
+    dest: /opt/bin/
     mode: "0755"
   loop:
     - zabbix-lld-services
@@ -74,8 +74,13 @@
       skip: true
   notify: Restart zabbix-agent
 
-- name: Remove deprecated local-userparameter_*
+- name: Remove deprecated files
   ansible.builtin.file:
-    path: "{{ zabbix_agent_conf_dir }}/local-userparameter_systemd-timesyncd-timedatectl.conf"
+    path: "{{ item }}"
     state: absent
+  loop:
+    - "{{ zabbix_agent_conf_dir }}/local-userparameter_systemd-timesyncd-timedatectl.conf"
+    - /usr/local/bin/zabbix-lld-services
+    - /usr/local/bin/zabbix-lld-tcp-services
+    - /usr/local/bin/zabbix_lld.py
   notify: Restart zabbix-agent
