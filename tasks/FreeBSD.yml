@@ -16,15 +16,6 @@
     regexp: Include={{ zabbix_agent_conf_dir | regex_replace('/', '\\/') }}\/\*\.conf
     line: Include={{ zabbix_agent_conf_dir }}/*.conf
 
-<<<<<<< HEAD
-- name: Create {{ zabbix_agent_conf_dir }} # noqa: name[template]
-  ansible.builtin.file:
-    dest: "{{ zabbix_agent_conf_dir }}/"
-    state: directory
-    mode: '755'
-
-- name: Configure zabbix-agent ({{ zabbix_agent_conf }}) # noqa: name[template]
-=======
 - name: Create {{ zabbix_agent_conf_dir }} # noqa[name-template]
   ansible.builtin.file:
     path: "{{ zabbix_agent_conf_dir }}"
@@ -32,13 +23,12 @@
     mode: "755"
 
 - name: Configure zabbix-agent ({{ zabbix_agent_conf }})
->>>>>>> f63d7c9b20016c14594a370cda1dfcd8a7e40f1e
   ansible.builtin.template:
     src: "{{ zabbix_agent_conf }}"
     # We use the same name for all which makes it easier if we change the
     # template for some hosts (myconf1.conf -> myconf2.conf)
     dest: "{{ zabbix_agent_conf_dir }}/local-zabbix_agentd.conf"
-    mode: '644'
+    mode: "644"
   notify: Restart zabbix-agent
 
 - name: Create {{ zabbix_agent_conf_dir }}/zabbix_agentd.psk (1/2) # noqa: name[template]
