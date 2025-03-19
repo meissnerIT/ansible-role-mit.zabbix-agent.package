@@ -1,6 +1,7 @@
 ---
 # Contains the path to the dir without final '/' (was mixed before 2021-11-12)
-- ansible.builtin.set_fact:
+- name: Set zabbix_agent_conf_dir
+  ansible.builtin.set_fact:
     zabbix_agent_conf_dir: /etc/zabbix/zabbix_agentd.conf.d
 
 - name: Gather the package facts
@@ -20,22 +21,37 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ zabbix_agent_conf_dir }}"
+    mode: "644"
   with_items:
     - local-userparameter_docker.conf
     - local-userparameter_system-sw-packages-version.conf
   notify: Restart zabbix-agent
 
+- name: Copy binaries
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /opt/bin/
+    mode: "0755"
+  loop:
+    - zabbix-docker-state
+    - zabbix-lld-docker-container
+    - zabbix-lld-service-discovery
+
 - name: Copy local-userparameter_systemd.conf
   ansible.builtin.template:
     src: local-userparameter_systemd.conf
     dest: "{{ zabbix_agent_conf_dir }}"
+    mode: "644"
   notify: Restart zabbix-agent
 
-- name: Copy binaries
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: /usr/local/bin/
-    mode: "0755"
+# flush handlers before removing deprecated files
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Remove deprecated binaries
+  ansible.builtin.file:
+    dest: /usr/local/bin/{{ item }}
+    state: absent
   loop:
     - zabbix-docker-state
     - zabbix-lld-docker-container
