@@ -38,6 +38,15 @@
   loop:
     - zabbix_lld.py
 
+- name: Copy low level discovery (lld) scripts (1/2)
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    # Same for Linux and FreeBSD
+    dest: /opt/bin/
+    mode: "0755"
+  loop:
+    - zabbix-lld-from-file
+
 - name: Copy low level discovery (lld) scripts
   ansible.builtin.template:
     src: "{{ item }}"
