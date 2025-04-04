@@ -9,6 +9,14 @@
   ansible.builtin.package:
     name: "{{ zabbix_agent_pkg_name }}"
 
+- name: Add user zabbix to group wheel
+  ansible.builtin.user:
+    name: zabbix
+    groups: wheel
+    append: true
+  notify: Restart zabbix-agent
+  when: users_have_been_moved_to_sudo | default(False)
+
 - name: Enable include of {{ zabbix_agent_conf_dir }}/*.conf # noqa: name[template]
   ansible.builtin.lineinfile:
     dest: /usr/local/etc/{{ zabbix_agent_pkg_name_prefix }}/zabbix_agentd.conf
@@ -43,6 +51,13 @@
     owner: root
     group: zabbix
     mode: "0640"
+
+- name: Copy sudo rules for service status
+  ansible.builtin.copy:
+    src: FreeBSD/sudoers.d/local-mit-zabbix-agent-package
+    dest: /usr/local/etc/sudoers.d/
+    mode: "0440"
+    validate: visudo -cf %s
 
 - name: Copy local-userparameter_*
   ansible.builtin.copy:
