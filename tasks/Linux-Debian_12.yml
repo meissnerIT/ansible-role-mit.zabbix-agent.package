@@ -44,6 +44,15 @@
     group: zabbix
     mode: "0640"
 
+- name: Copy local-userparameter_*
+  ansible.builtin.copy:
+    src: Linux/{{ item }}
+    dest: "{{ zabbix_agent_conf_dir }}"
+    mode: "644"
+  loop:
+    - local-userparameter_local-web-page-get.conf
+  notify: Restart zabbix-agent
+
 - name: Gather the package facts
   ansible.builtin.package_facts:
     manager: auto
@@ -53,7 +62,7 @@
   ansible.builtin.copy:
     src: logcheck-zabbix-agent
     dest: /etc/logcheck/ignore.d.server/mit-defaults-zabbix-agent
-    mode: '644'
+    mode: "644"
   when: "'logcheck' in ansible_facts.packages"
 
 # Ensure to use name.service and not only name
