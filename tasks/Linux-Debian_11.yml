@@ -43,6 +43,15 @@
     group: zabbix
     mode: "0640"
 
+- name: Copy local-userparameter_*
+  ansible.builtin.copy:
+    src: Linux/{{ item }}
+    dest: "{{ zabbix_agent_conf_dir }}"
+    mode: "644"
+  loop:
+    - local-userparameter_local-web-page-get.conf
+  notify: Restart zabbix-agent
+
 - name: Gather the package facts
   ansible.builtin.package_facts:
     manager: auto

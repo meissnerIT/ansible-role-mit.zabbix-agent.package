@@ -1,8 +1,5 @@
 ---
-# Contains the path to the dir without final '/' (was mixed before 2021-11-12)
-- name: Set zabbix_agent_conf_dir
-  ansible.builtin.set_fact:
-    zabbix_agent_conf_dir: /etc/zabbix/zabbix_agentd.conf.d
+# See mit.zabbix-agent.common/vars/Debian.yml for defaults
 
 - name: Gather the package facts
   ansible.builtin.package_facts:

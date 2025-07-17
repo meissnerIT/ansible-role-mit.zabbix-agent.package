@@ -72,6 +72,7 @@
     dest: "{{ zabbix_agent_conf_dir }}"
     mode: "644"
   with_items:
+    - local-userparameter_local-web-page-get.conf
     - local-userparameter_service.conf
     - local-userparameter_system-sw-packages-version.conf
   notify: Restart zabbix-agent
