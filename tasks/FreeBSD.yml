@@ -30,6 +30,13 @@
     state: directory
     mode: "755"
 
+- name: Link zabbix/zabbix_agentd.conf → {{ zabbix_agent_pkg_name_prefix }}/zabbix_agentd.conf # noqa: name[template]
+  ansible.builtin.file:
+    src: "../{{ zabbix_agent_pkg_name_prefix }}/zabbix_agentd.conf"
+    dest: "/usr/local/etc/zabbix/zabbix_agentd.conf"
+    # dest: "../zabbix/zabbix_agentd.conf"
+    state: link
+
 - name: Configure zabbix-agent ({{ zabbix_agent_conf }})
   ansible.builtin.template:
     src: "{{ zabbix_agent_conf }}"
