@@ -64,10 +64,16 @@
     dest: "{{ zabbix_agent_conf_dir }}"
     mode: "644"
   with_items:
-    - local-userparameter_ntp_client.conf
-    - local-userparameter_tcp_services.conf
     - local-userparameter_local-vfs-dir-count.conf
     - local-userparameter_local-vfs-file-owner.conf
+    - local-userparameter_tcp_services.conf
+  notify: Restart zabbix-agent
+
+- name: Copy local-userparameter_ntp_client.conf
+  ansible.builtin.copy:
+    src: local-userparameter_ntp_client-{{ ntp_client | default('chrony') }}.conf
+    dest: "{{ zabbix_agent_conf_dir }}/local-userparameter_ntp_client.conf"
+    mode: "644"
   notify: Restart zabbix-agent
 
 # e.g. files/etc/zabbix_agentd.conf.d/local-my.host.conf
