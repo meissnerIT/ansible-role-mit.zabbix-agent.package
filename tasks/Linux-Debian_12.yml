@@ -66,8 +66,9 @@
   when: "'logcheck' in ansible_facts.packages"
 
 # Ensure to use name.service and not only name
+# 2025-08-11: Changed to zabbix-agent for web12 (Debian with sysvinit)
 - name: Start the zabbix-agent service
   ansible.builtin.service:
-    name: zabbix-agent.service
+    name: zabbix-agent
     state: started
     enabled: true
