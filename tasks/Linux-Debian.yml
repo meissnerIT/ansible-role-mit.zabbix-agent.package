@@ -1,4 +1,8 @@
 ---
+# Also used by Oracle Linux
+# ansible_lsb.id: OracleServer
+# ansible_distribution: OracleLinux
+#
 # See mit.zabbix-agent.common/vars/Debian.yml for defaults
 
 - name: Gather the package facts
