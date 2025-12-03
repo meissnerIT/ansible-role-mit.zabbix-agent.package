@@ -4,3 +4,4 @@ zabbix	ALL = (ALL) NOPASSWD: /bin/systemctl is-active *
 # Debian 12
 zabbix	ALL = (ALL) NOPASSWD: /usr/bin/systemctl is-active *
 
+zabbix	ALL = (ALL) NOPASSWD: /usr/sbin/service * status

@@ -5,6 +5,10 @@
 #
 # See mit.zabbix-agent.common/vars/Debian.yml for defaults
 
+- name: Set defaults
+  ansible.builtin.set_fact:
+    mit_init_system: "{{ mit_init_system | default('systemd') }}"
+
 - name: Gather the package facts
   ansible.builtin.package_facts:
     manager: auto
@@ -16,7 +20,9 @@
     dest: /etc/sudoers.d/
     mode: "0440"
     validate: visudo -cf %s
-  when: "'dbus' not in ansible_facts.packages"
+  when: >
+    'dbus' not in ansible_facts.packages
+    or mit_init_system == 'sysvinit'
 
 - name: Copy local-userparameter_*
   ansible.builtin.copy:
@@ -39,12 +45,28 @@
     - zabbix-lld-docker-container
     - zabbix-lld-service-discovery
 
-- name: Copy local-userparameter_systemd.conf
-  ansible.builtin.template:
-    src: local-userparameter_systemd.conf
+- name: Copy local-userparameter_service.conf (file)
+  ansible.builtin.copy:
+    src: Linux/{{ mit_init_system }}/local-userparameter_service.conf
     dest: "{{ zabbix_agent_conf_dir }}"
     mode: "644"
   notify: Restart zabbix-agent
+  when: mit_init_system == 'sysvinit'
+
+- name: Copy local-userparameter_service.conf (template)
+  ansible.builtin.template:
+    src: Linux/{{ mit_init_system }}/local-userparameter_service.conf
+    dest: "{{ zabbix_agent_conf_dir }}"
+    mode: "644"
+  notify: Restart zabbix-agent
+  when: mit_init_system == 'systemd'
+
+- name: Remove deprecated configuration
+  ansible.builtin.file:
+    dest: "{{ zabbix_agent_conf_dir }}/{{ item }}"
+    state: absent
+  loop:
+    - local-userparameter_systemd.conf
 
 # flush handlers before removing deprecated files
 - name: Flush handlers
