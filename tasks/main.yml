@@ -26,8 +26,11 @@
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
-      - "{{ ansible_system }}-{{ ansible_distribution }}.yml" # Linux-Debian.yml
-      - "{{ ansible_system }}.yml" # FreeBSD.yml
+      # Linux-Debian.yml
+      # Linux-Univention Corporate Server.yml
+      - "{{ ansible_system }}-{{ ansible_distribution }}.yml"
+      # FreeBSD.yml
+      - "{{ ansible_system }}.yml"
 
 - name: Copy low level discovery (lld) helper scripts
   ansible.builtin.template:
