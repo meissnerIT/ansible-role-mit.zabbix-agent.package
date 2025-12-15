@@ -3,3 +3,4 @@
 
 # At least service splunk needs sudo
 zabbix	ALL = (ALL) NOPASSWD: /usr/sbin/service * status
+zabbix	ALL = (ALL) NOPASSWD: /usr/sbin/pkg -j * query %v *
