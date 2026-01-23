@@ -4,3 +4,10 @@
     pkg: zabbix-agent
     state: present
     cache_valid_time: 3600
+
+- name: Install zabbix-sender (package from OS / Debian)
+  ansible.builtin.apt:
+    pkg: zabbix-sender
+    state: present
+    cache_valid_time: 3600
+  when: ansible_distribution_major_version|int >= 13
