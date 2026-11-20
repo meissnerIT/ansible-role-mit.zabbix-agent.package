@@ -103,7 +103,7 @@
   ansible.builtin.file:
     dest: "/usr/local/etc/{{ zabbix_agent_purge_pkg }}/zabbix_agentd.conf.d"
     state: absent
-  when: zabbix_agent_purge_pkg
+  when: zabbix_agent_purge_pkg is defined
 
 # Ensure to use name.service and not only name
 - name: Start the zabbix-agent service

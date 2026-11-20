@@ -5,7 +5,7 @@
 
 - name: Include ansible_system-ansible_lsb.id_ansible_lsb.major_release.yml
   ansible.builtin.include_tasks: "{{ tasks_file }}"
-  when: ansible_lsb is defined and ansible_lsb.id is defined and tasks_file != ""
+  when: ansible_lsb is defined and ansible_lsb.id is defined and tasks_file is not none
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
@@ -13,7 +13,7 @@
 
 - name: Include ansible_system-ansible_distribution_ansible_distribution_major_version-ansible_machine.yml
   ansible.builtin.include_tasks: "{{ tasks_file }}"
-  when: (ansible_lsb is not defined or ansible_lsb.id is not defined) and ansible_distribution_major_version is defined and tasks_file != ""
+  when: (ansible_lsb is not defined or ansible_lsb.id is not defined) and ansible_distribution_major_version is defined and tasks_file is not none
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
@@ -22,7 +22,7 @@
 # 2024-05-13: Oracle Linux Server release 8.9 does not support any ansible_* variable
 - name: Include ansible_system-ansible_distribution.yml / ansible_system.yml
   ansible.builtin.include_tasks: "{{ tasks_file }}"
-  when: tasks_file != ""
+  when: tasks_file is not none
   vars:
     tasks_file: "{{ lookup('ansible.builtin.first_found', files, errors='ignore') }}"
     files:
